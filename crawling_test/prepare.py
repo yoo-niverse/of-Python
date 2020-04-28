@@ -1,12 +1,13 @@
 import requests
+import telegram
 from bs4 import BeautifulSoup
+bot=telegram.Bot(token = '1101854162:AAG6DnVaCykWxo9qKZivylL13j0LA6HCYaA')
+#텔레그램으로 생성한 봇을 불러왔다.
 
-url='http://www.cgv.co.kr/common/showtimes/iframeTheater.aspx?areacode=05,207&theatercode=0061&date=20200427'
+url='http://www.cgv.co.kr/common/showtimes/iframeTheater.aspx?areacode=05,207&theatercode=0061&date=20200428'
 #예매 시간표를 받아오기 위해 CGV 홈페이지에서 개발자 도구를 활용하여, 시간표가 노출되는 부분의 iframe 링크를 가져왔다.
 html=requests.get(url)
 #print(html.text)
-
-""" 상단 import 부분이 작동하지 않는 이유가 있었다. 아무 내용도 없이 모듈을 불러오기만 해서 오류가 났던 것 같다.."""
 
 soup=BeautifulSoup(html.text, 'html.parser')
 #soup.select_one('body > div > div.sect-showtimes > ul > li:nth-child(1) > div > div.info-movie > a > strong')
@@ -15,7 +16,6 @@ soup=BeautifulSoup(html.text, 'html.parser')
 title_list= soup.select('div.info-movie')
 """개발자 도구를 활용하여 영화 제목이 info-movie라는 클래스에 모두 들어가있는 것을 확인하였으므로,
 해당 클래스 요소를 가져와서 title_list라는 리스트에 삽입한다."""
-
 
 """for i in title_list:
     print(i.select_one('a>strong').text.strip()) """ #영화 제목은 info-movie 클래스에서 a라는 클래스 -> strong이라는 클래스 내부에 있다.
@@ -33,6 +33,8 @@ if grade19 :
     grade19=grade19.find_parent('div', class_='col-times')
     title=grade19.select_one('div.info-movie>a>strong').text.strip()
     #find_parent는 부모 클래스를 찾는 메소드. col-times라는 클래스에 info-movie와 grade-19 클래스가 들어있다.
-    print('해당 일자에는 청불 영화가 있습니다. : '+title)
+    bot.sendMessage(chat_id=914003638, text='해당 일자에는 청불영화가 있습니다'+title)
 else :
-    print('해당 일자에는 청불 영화가 없습니다.')
+    bot.sendMessage(chat_id=914003638, text='해당 일자에는 청불영화가 없습니다')
+
+    #실행결과가 이제는 무조건 '없습니다'로만 출력된다. CGV측에서 해당 일자 상영표를 삭제했기 때문.
